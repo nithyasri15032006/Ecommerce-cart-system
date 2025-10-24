@@ -1,0 +1,38 @@
+// server.js
+const express = require("express");
+const path = require("path");
+const app = express();
+const PORT = 3000;
+
+// Middleware
+app.use(express.json());
+app.use(express.static(path.join(__dirname, "public")));
+
+// Temporary data (simulate DB)
+let products = [
+  { id: 1, name: "Wireless Headphones", price: 1200 },
+  { id: 2, name: "Smart Watch", price: 2500 },
+  { id: 3, name: "Bluetooth Speaker", price: 1800 }
+];
+let cart = [];
+
+// Routes
+app.get("/api/products", (req, res) => res.json(products));
+
+app.post("/api/cart", (req, res) => {
+  const { id } = req.body;
+  const product = products.find((p) => p.id === id);
+  if (product) cart.push(product);
+  res.json(cart);
+});
+
+app.get("/api/cart", (req, res) => res.json(cart));
+
+app.delete("/api/cart/:id", (req, res) => {
+  const id = parseInt(req.params.id);
+  cart = cart.filter((item) => item.id !== id);
+  res.json(cart);
+});
+
+// Start Server
+app.listen(PORT, () => console.log(`Server running at http://localhost:${PORT}`));
